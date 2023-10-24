@@ -25,6 +25,8 @@ class whois_lookup():
             self.abuse_info['abuse link'] = 'http://www.cert.br/'
             self.abuse_info['email 1'] = 'cert@cert.br'
             self.abuse_info['email 2'] = 'mail-abuse@cert.br'
+            
+            return self.abuse_info
 
         elif 'whois_server' in self.info:
             host = self.info['whois_server']
@@ -34,5 +36,8 @@ class whois_lookup():
                 self.abuse_info['abuse link'] = hosts_abuse_info[host]['abuse link']
                 self.abuse_info['email 1'] = hosts_abuse_info[host]['email 1']
                 self.abuse_info['email 2'] = hosts_abuse_info[host]['email 2']
+            
+            return self.abuse_info
+        else:
+            return None
         
-        return self.abuse_info

@@ -17,13 +17,19 @@ class httpx_handler():
         Returns the path of the screenshot.
         """
         current_dir = f'{os.getcwd()}'
-        return f'{current_dir}\\{self._ss_path}'
+        if os.path.exists(self._ss_path) and os.path.isdir(self._ss_path):
+            return f'{current_dir}\\{self._ss_path}'
+        else:
+            return None
     
     def get_ss_relative_path(self):
         """
         Returns the relative path of the screenshot folder.
         """
-        return self._ss_path
+        if os.path.exists(self._ss_path) and os.path.isdir(self._ss_path):
+            return self._ss_path
+        else:
+            return None
 
     def __get_url(self, domain):
         """
@@ -42,7 +48,7 @@ class httpx_handler():
             return f'{whois.extract_domain(domain)}'
 
 
-    def get_screenshot(self):
+    def generate_screenshot(self):
         """
         Renders the DOM file with the help of the HTTPX tool, to generate a screenshot. 
         """
@@ -85,3 +91,6 @@ class httpx_handler():
 
             print(f"Error: {e.args[-1]}")
             print(error_message)
+            return None
+
+

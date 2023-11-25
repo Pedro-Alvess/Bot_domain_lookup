@@ -1,4 +1,5 @@
 import whois
+import dns.resolver
 from abuse_dictionary import hosts_abuse_info
 
 class whois_lookup():
@@ -9,6 +10,7 @@ class whois_lookup():
         self.domain = whois.extract_domain(domain)
         self.info = whois.whois(self.domain)
         self.abuse_info = {'abuse link': None, 'email 1': None, 'email 2': None}
+        self._dns_info = {'A': [], 'MX': [], 'NS': [], 'SOA': []}
 
     def get_whois(self):
         """
@@ -40,4 +42,36 @@ class whois_lookup():
             return self.abuse_info
         else:
             return None
+    
+    def get_dns_info(self):
+        record_types = ['A', 'MX', 'NS', 'SOA']
+
+        for record_type in record_types:
+            try: 
+                response = dns.resolver.resolve(self.domain, record_type)
+
+                for record in response:
+                    dns_record = {'Value': str(record)}  # Converta o valor para string
+                    if hasattr(record, 'ttl'):
+                        dns_record['TTL'] = record.ttl
+
+                    self._dns_info[record_type].append(dns_record) 
+            
+            except dns.resolver.NXDOMAIN:
+                print('ERROR: DNS Info - Domain not found')
+                continue
+
+            except dns.resolver.NoAnswer:
+                print(f'ERROR: DNS Info - No records of "{record_type}" type to the domain {self.domain}')
+                continue
+       
+            except dns.resolver.NoNameservers:
+                print('DNS severs not available')
+                continue
+    
+            except Exception as e:
+                print(f'ERROR: DNS Info - type "{record_type}" - {e}')
+                continue
+    
         
+        return self._dns_info

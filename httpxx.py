@@ -93,4 +93,3 @@ class httpx_handler():
             print(error_message)
             return None
 
-

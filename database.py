@@ -38,7 +38,7 @@ class database_handler:
         except sqlite3.IntegrityError as e:
             if "UNIQUE constraint failed: domains_data.domain" in str(e):
                 self._del_record(domain)
-                self.insert_data(domain)
+                self.insert_data(domain, gpt_analysis, vt_info)
             else:
                 print("ERROR: The data could not be saved in the database.")
 
@@ -69,6 +69,7 @@ class database_handler:
         self.cursor.execute('''
         DELETE FROM domains_data WHERE domain = ?
         ''', (domain,))
+        self.connection.commit()
 
 
     def del_all(self):
@@ -78,6 +79,7 @@ class database_handler:
         self.cursor.execute('''
         DELETE FROM domains_data
         ''')
+        self.connection.commit()
 
     def close(self):
         """
@@ -85,4 +87,3 @@ class database_handler:
         """
         self.connection.commit()
         self.connection.close()
-

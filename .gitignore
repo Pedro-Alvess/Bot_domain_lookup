@@ -4,3 +4,4 @@ api_keys.py
 output/
 __pycache__/
 
+mydatabase.db

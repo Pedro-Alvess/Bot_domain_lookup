@@ -4,7 +4,6 @@ from whois_info import whois_lookup
 from httpxx import httpx_handler
 from api_keys import public_key
 from rich.console import Console
-from PIL import Image
 import threading
 import os
 from database import database_handler
@@ -12,7 +11,7 @@ from database import database_handler
 
 class gpt_analysis():
     
-    def __init__(self, domain:str, db:database_handler, virustotal = True, whois = True, whois_abuse = True, screenshot = True, technology = True, DNS_info = True):
+    def __init__(self, domain:str, virustotal = True, whois = True, whois_abuse = True, screenshot = True, technology = True, DNS_info = True):
         """
         This module retrieves information from all the other modules 
         and at the end summarizes a descriptive report on the case.
@@ -32,7 +31,7 @@ class gpt_analysis():
 
         self._whois = whois_lookup(self._domain)
         self._httpx = httpx_handler(self._domain)
-        self._db = db
+        self._db = database_handler()
 
         self._console = Console()
 
@@ -83,28 +82,10 @@ class gpt_analysis():
             if ss_reponse != None:
                 self._gpt_prompt += f"\nCaminho para visualizar a screenshot da página web: {ss_reponse}"
                 
-                threading.Thread(target=self.__open_img()) #Executes the function of opening the image in a different thread.      
+                self._console.log("Loading image...")
+                threading.Thread(target=self._httpx.open_img()) #Executes the function of opening the image in a different thread.      
 
-    def __open_img(self):
-        """
-        Opens the image that was rendered by the HTTPX module.
-        """
-        try:
-            self._console.log("Loading image...")
 
-            path = self._httpx.get_ss_path()
-            path += f"\\{os.listdir(path)[0]}"
-
-            with Image.open(path) as img:
-                img.load()
-            
-            if isinstance(img, Image.Image):
-                img.show()
-            else:
-                raise Exception(f"Error: Could not open image located at: {path}")
-            
-        except Exception as e:
-            self._console.log(f"Error: {e.args[-1]}")
 
     def get_reponse(self):
         """
@@ -127,8 +108,11 @@ class gpt_analysis():
         self._console.log("Saving data...")
         if self._vt_status:
             self._db.insert_data(self._domain, gpt_reponse, self._vt_response)
+            self._db.close()
+            
         else:
             self._db.insert_data(self._domain, gpt_reponse)
+            self._db.close()
 
         return gpt_reponse
 

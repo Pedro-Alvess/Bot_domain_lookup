@@ -1,6 +1,8 @@
 import subprocess
 import os
 import whois
+from PIL import Image
+
 
 class httpx_handler():
     def __init__(self, domain):
@@ -92,4 +94,24 @@ class httpx_handler():
             print(f"Error: {e.args[-1]}")
             print(error_message)
             return None
+
+    def open_img(self):
+        """
+        Opens the image that was rendered by the HTTPX module.
+        """
+        try:
+
+            path = self.get_ss_path()
+            path += f"\\{os.listdir(path)[0]}"
+            with Image.open(path) as img:
+                img.load()
+            
+            if isinstance(img, Image.Image):
+                img.show()
+            else:
+                raise Exception(f"Error: Could not open image located at: {path}")
+             
+        except Exception as e:
+            print(f"Error: {e.args[-1]}")
+
 

@@ -14,9 +14,15 @@ hosts_abuse_info = {
         'email 1': 'abuse@namesilo.com',
         'email 2': None
     },
+    "whois.ovh.com":{
+        'abuse link': 'https://www.ovh.com/abuse/#!/',
+        'email 1': 'egistry.google.legal@domain.ovh.net',
+        'email 2': None
+    },
     "default":{
         'abuse link': None,
         'email 1': None,
         'email 2': None
     }
+
 }

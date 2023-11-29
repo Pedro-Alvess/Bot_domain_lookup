@@ -1,6 +1,8 @@
 import subprocess
 import os
 import whois
+from PIL import Image
+
 
 class httpx_handler():
     def __init__(self, domain):
@@ -17,13 +19,19 @@ class httpx_handler():
         Returns the path of the screenshot.
         """
         current_dir = f'{os.getcwd()}'
-        return f'{current_dir}\\{self._ss_path}'
+        if os.path.exists(self._ss_path) and os.path.isdir(self._ss_path):
+            return f'{current_dir}\\{self._ss_path}'
+        else:
+            return None
     
     def get_ss_relative_path(self):
         """
         Returns the relative path of the screenshot folder.
         """
-        return self._ss_path
+        if os.path.exists(self._ss_path) and os.path.isdir(self._ss_path):
+            return self._ss_path
+        else:
+            return None
 
     def __get_url(self, domain):
         """
@@ -42,7 +50,7 @@ class httpx_handler():
             return f'{whois.extract_domain(domain)}'
 
 
-    def get_screenshot(self):
+    def generate_screenshot(self):
         """
         Renders the DOM file with the help of the HTTPX tool, to generate a screenshot. 
         """
@@ -85,3 +93,25 @@ class httpx_handler():
 
             print(f"Error: {e.args[-1]}")
             print(error_message)
+            return None
+
+    def open_img(self):
+        """
+        Opens the image that was rendered by the HTTPX module.
+        """
+        try:
+
+            path = self.get_ss_path()
+            path += f"\\{os.listdir(path)[0]}"
+            with Image.open(path) as img:
+                img.load()
+            
+            if isinstance(img, Image.Image):
+                img.show()
+            else:
+                raise Exception(f"Error: Could not open image located at: {path}")
+             
+        except Exception as e:
+            print(f"Error: {e.args[-1]}")
+
+

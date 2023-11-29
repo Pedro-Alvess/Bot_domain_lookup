@@ -2,7 +2,7 @@ import requests
 from api_keys import public_key
 
 class reputation_analysis():
-    def __init__(self, domain):
+    def __init__(self, domain: str):
         """
         """
         self.domain = domain
@@ -11,9 +11,7 @@ class reputation_analysis():
         self.VT_response = None
 
         try:
-            pass
-            #self.__reponse_VT()
-            #commented so as not to reach the api quota limit
+            self.__reponse_VT()
         except Exception as e:
              print(f"Error making a request to the VirusTotal API: {e}")
 
@@ -32,6 +30,7 @@ class reputation_analysis():
 
     def get_reputation_VT(self):
         """
+        Returns a dictionary with the domain's reputation.
         """
 
         try:
@@ -52,10 +51,12 @@ class reputation_analysis():
             return self.reputation_VT
         
         except Exception as e:
-            raise Exception("Error extracting data from VirusTotal report.")
+            print("Error extracting data from VirusTotal report.")
+
+            return None
         
 
-print(reputation_analysis('arsaconcretos.com').get_reputation_VT())
+
             
 
 

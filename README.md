@@ -61,7 +61,7 @@ Select "Delete database information" to remove all stored information in the SQL
 
 # License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [GPL-3.0 license](LICENSE).
 
 
 

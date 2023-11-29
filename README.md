@@ -13,7 +13,7 @@ BMO is a Python bot designed to perform comprehensive domain analyses, providing
 
 1. Clone the repository of BMO:
 
-       git clone
+       git clone git clone https://github.com/Pedro-Alvess/Bot_domain_lookup.git
    
 2. Clone the repository of HTTPX:
    

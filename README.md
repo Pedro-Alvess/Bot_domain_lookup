@@ -24,6 +24,8 @@ BMO is a Python bot designed to perform comprehensive domain analyses, providing
 
        pip install -r requirements.txt
 
+5. Add the api keys to the api_keys.py file.
+
 # How to Use
 
 ## (～￣▽￣)～ Main Menu (～￣▽￣)～

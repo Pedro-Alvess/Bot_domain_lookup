@@ -13,11 +13,11 @@ import keyboard
 
 
 
-
 class main_handler():
     
     def __init__(self):
         """
+        This class is responsible for manipulating the entire system.
         """
 
         self._console = Console()
@@ -62,6 +62,7 @@ class main_handler():
 
     def __menu(self):
         """
+        Generates the bot's main menu.
         """
         os.system('clear')
         
@@ -247,6 +248,7 @@ class main_handler():
 
     def __print_nested_dict(self, dic, indent=0):
         """
+        Transforms information from dictionaries into indented texts.
         """
 
         for key, value in dic.items():

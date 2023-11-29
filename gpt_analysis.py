@@ -27,6 +27,8 @@ class gpt_analysis():
         self._tc_status = technology
         self._dns_info = DNS_info
 
+        self._gpt_reponse = ""
+
         self._gpt_prompt = f"Crie um breve relatorio explicativo para o domínio {domain}, considerando as informações a seguir:"
 
         self._whois = whois_lookup(self._domain)
@@ -91,30 +93,45 @@ class gpt_analysis():
         """
         This function is responsible for generating the domain health report with the help of GPT Chat.
         """
-        with self._console.status("[bold green]Working on tasks...") as status:
-            self.__function_handler()
+        if not self.__data_recovery():
+            with self._console.status("[bold green]Working on tasks...") as status:
+                self.__function_handler()
 
-            self._console.log("Summarizing answer...")
-            gpt_reponse = self._gpt.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": "Você é um assistente de cybersecurity, experiente em analisar dados de dominios como whois, reputação do Virus Total e informações do DNS para gerar relatórios breves sobre a saúde do domínio/URL investigado. Ao final da exposição dos dados analisados você sempre faz um teste de análise completa sobre o caso, correlacionando os dados das ferramentas e ao final apresenta um disclaimer solicitando análise de outro analistas de segurança. Toda a sua resposta deverá ser formatada com os marcadores de markdown e pode conter emojis ao longo do relatório. Após o título e antes do resto da análise e exposição das informações, você sempre irá destacar a classificação do domínio/URL em uma das três categorias: “Malicioso”, “Suspeito” ou “Não Malicioso”. Não se esqueça de colocar o título: “Análise preliminar”."},
-                    {"role": "user", "content": self._gpt_prompt}
-                    ]
-                )
-        
-        gpt_reponse = gpt_reponse.choices[0].message["content"]
-        
-        self._console.log("Saving data...")
-        if self._vt_status:
-            self._db.insert_data(self._domain, gpt_reponse, self._vt_response)
-            self._db.close()
+                self._console.log("Summarizing answer...")
+                self._gpt_reponse = self._gpt.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "Você é um assistente de cybersecurity, experiente em analisar dados de dominios como whois, reputação do Virus Total e informações do DNS para gerar relatórios breves sobre a saúde do domínio/URL investigado. Ao final da exposição dos dados analisados você sempre faz um teste de análise completa sobre o caso, correlacionando os dados das ferramentas e ao final apresenta um disclaimer solicitando análise de outro analistas de segurança. Toda a sua resposta deverá ser formatada com os marcadores de markdown e pode conter emojis ao longo do relatório. Após o título e antes do resto da análise e exposição das informações, você sempre irá destacar a classificação do domínio/URL em uma das três categorias: “Malicioso”, “Suspeito” ou “Não Malicioso”. Não se esqueça de colocar o título: “Análise preliminar”."},
+                        {"role": "user", "content": self._gpt_prompt}
+                        ]
+                    )
             
-        else:
-            self._db.insert_data(self._domain, gpt_reponse)
+            self._gpt_reponse = self._gpt_reponse.choices[0].message["content"]
+            
+            self._console.log("Saving data...")
+            self._db.insert_data(self._domain, self._gpt_reponse)
             self._db.close()
 
-        return gpt_reponse
+        return self._gpt_reponse
+    
+    def __data_recovery(self):
+        """
+        """
+        response = self._db.find_record(self._domain)
+
+        if not response == []:
+            print(f"\n\nExiste uma análise feita no data {response[0][3]}.")
+            print("\n>>> Você deseja mesmo assim gerar uma nova análise ? (s/n) ", end="")
+
+            resp = input()
+
+            if resp.upper() == "S":
+                return False
+            else:
+                self._gpt_reponse = response[0][2]
+                return True
+        else:
+            return False
 
 
 

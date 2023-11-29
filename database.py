@@ -14,13 +14,12 @@ class database_handler:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 domain TEXT UNIQUE NOT NULL,
                 gpt_analysis TEXT,
-                vt_info TEXT,
                 date DATETIME            
             );
         ''')
         self.connection.commit()
 
-    def insert_data(self, domain:str, gpt_analysis:str, vt_info = None):
+    def insert_data(self, domain:str, gpt_analysis:str):
         """
         Adds new records to the database.
 
@@ -29,16 +28,16 @@ class database_handler:
         """
         try:
             self.cursor.execute('''
-                INSERT INTO domains_data (domain, gpt_analysis, vt_info, date)
-                VALUES (?, ?, ?, ?)
-            ''', (domain, gpt_analysis, f"{vt_info}", datetime.now()))
+                INSERT INTO domains_data (domain, gpt_analysis, date)
+                VALUES (?, ?, ?)
+            ''', (domain, gpt_analysis, datetime.now()))
 
             self.connection.commit()
         
         except sqlite3.IntegrityError as e:
             if "UNIQUE constraint failed: domains_data.domain" in str(e):
                 self._del_record(domain)
-                self.insert_data(domain, gpt_analysis, vt_info)
+                self.insert_data(domain, gpt_analysis)
             else:
                 print("ERROR: The data could not be saved in the database.")
 
